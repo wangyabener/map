@@ -1,6 +1,6 @@
 package models
 
-type result struct {
+type Result struct {
 	Key string
 	Val int64
 }
@@ -8,29 +8,22 @@ type result struct {
 type Game struct {
 	Name string
 	Code string
-	Res  []result
+	Func string
+	Res  []*Result
 }
 
-func GetGames() [4]Game {
-	data := [4]Game{
+func GetGames() []Game {
+	data := []Game{
 		{
-			Name: "大小", Code: "dx", Res: []result{
-				{Key: "d", Val: 0}, {Key: "x", Val: 0},
+			Name: "大小", Code: "dx", Func: "Daxiao", Res: []*Result{
+				{Key: "d", Val: 0},
+				{Key: "x", Val: 0},
 			},
 		},
 		{
-			Name: "单双", Code: "ds", Res: []result{
-				{Key: "d", Val: 0}, {Key: "s", Val: 0},
-			},
-		},
-		{
-			Name: "双尾", Code: "sw", Res: []result{
-				{Key: "t", Val: 0}, {Key: "f", Val: 0},
-			},
-		},
-		{
-			Name: "牛牛", Code: "nn", Res: []result{
-				{Key: "z", Val: 0}, {Key: "x", Val: 0},
+			Name: "单双", Code: "ds", Func: "Danshuang", Res: []*Result{
+				{Key: "d", Val: 0},
+				{Key: "s", Val: 0},
 			},
 		},
 	}

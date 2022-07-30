@@ -3,6 +3,7 @@ package reminder
 import (
 	"fmt"
 	"map/models"
+	"map/service"
 )
 
 func Build() {
@@ -11,43 +12,53 @@ func Build() {
 	// game list
 	games := models.GetGames()
 
+	fmt.Println(games)
+
 	// secends
-	secs := [20]int{}
+	secs := [1]int{}
 	for i, j := 0, 0; i < len(secs); i++ {
 		secs[i] = j
 		j = j + 3
 	}
 
-	// init data
 	data := make(map[int]map[string]models.Game)
-	for _, sec := range secs {
-		items := make(map[string]models.Game)
-		for _, game := range games {
-			items[game.Code] = models.Game{
-				Name: game.Name,
-				Code: game.Code,
-			}
-		}
-		data[sec] = items
-	}
-
-	// rep := make(map[int64]map[string]models.Game)
-	// rep := make(map[int64]map[string]map[string]int)
-	rep := map[int64]map[string]map[string]int{
-		3: {
-			"dx": {
-				"d": 0,
-				"x": 0,
-			},
-		},
-	}
 
 	for _, lottery := range lotteries {
-		sec := lottery.BlockInfo.BlockTime / 1000 % 60
-		for _, game := range games {
-			rep[sec][game.Code]["d"]++
+		for _, sec := range secs {
+			items := make(map[string]models.Game)
+			for _, game := range games {
+				// reflect
+				f, _ := service.InvokeObjectMethod(new(service.Lucky), game.Func, lottery.BlockNum)
+				// result
+				s := f[0].String()
+
+				results := make([]*models.Result, 0, len(game.Res))
+				for _, res := range game.Res {
+					if s == res.Key {
+						res.Val++
+					} else {
+
+					}
+
+					results = append(results, &models.Result{
+						Key: res.Key,
+						Val: res.Val,
+					})
+				}
+				items[game.Code] = models.Game{
+					Code: game.Code,
+					Res:  results,
+				}
+			}
+			data[sec] = items
 		}
 	}
 
-	fmt.Printf("%v", rep)
+	for _, items := range data {
+		for _, item := range items {
+			for _, v := range item.Res {
+				fmt.Println(v.Key, v.Val)
+			}
+		}
+	}
 }
